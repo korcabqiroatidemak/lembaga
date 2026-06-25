@@ -2,67 +2,575 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
     <title>Daftar Lembaga/TPQ Qiroati Cabang Demak</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
-        body { background-color: #f4f6f9; font-family: system-ui, -apple-system, sans-serif; }
-        .main-card { border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); border: none; }
-        .header-title { color: #1e3a8a; font-weight: 700; text-align: center; margin-bottom: 25px; line-height: 1.4; }
-        .admin-badge { display: none; background-color: #10b981; color: white; padding: 6px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: 600; }
-        .btn-add { display: none; }
-        /* Gaya khusus untuk baris catatan admin (Non-Angka) */
-        .row-catatan { background-color: #fffbeb !important; font-style: italic; color: #b45309; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #f0f4f8;
+            min-height: 100vh;
+            padding: 16px;
+            color: #1a1a2e;
+        }
+
+        /* Container utama dengan efek glassmorphism halus */
+        .app-wrapper {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px 16px;
+        }
+
+        /* Header dengan gradien modern */
+        .header-section {
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+            border-radius: 24px;
+            padding: 30px 24px 40px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(30, 58, 138, 0.2);
+        }
+
+        .header-section::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 300px;
+            height: 300px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .header-section::after {
+            content: '';
+            position: absolute;
+            bottom: -40%;
+            left: -10%;
+            width: 200px;
+            height: 200px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .header-title {
+            color: white;
+            font-weight: 700;
+            font-size: clamp(1.5rem, 4vw, 2.5rem);
+            margin-bottom: 8px;
+            letter-spacing: -0.02em;
+            line-height: 1.2;
+        }
+
+        .header-subtitle {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: clamp(0.9rem, 2vw, 1.1rem);
+            font-weight: 400;
+            margin-bottom: 0;
+        }
+
+        /* Badge status admin */
+        .admin-badge-container {
+            display: none;
+            align-items: center;
+            gap: 12px;
+            margin-top: 16px;
+            flex-wrap: wrap;
+        }
+
+        .admin-badge {
+            background: rgba(16, 185, 129, 0.9);
+            color: white;
+            padding: 6px 16px;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .admin-badge i {
+            font-size: 0.9rem;
+        }
+
+        /* Tombol aksi */
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .btn-custom {
+            padding: 10px 20px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.25s ease;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+
+        .btn-custom-primary {
+            background: white;
+            color: #1e3a8a;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-custom-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+            background: white;
+            color: #1e3a8a;
+        }
+
+        .btn-custom-outline {
+            background: transparent;
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .btn-custom-outline:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: white;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .btn-custom-danger {
+            background: #ef4444;
+            color: white;
+        }
+
+        .btn-custom-danger:hover {
+            background: #dc2626;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(239, 68, 68, 0.3);
+            color: white;
+        }
+
+        /* Kartu utama */
+        .main-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+            border: 1px solid rgba(0, 0, 0, 0.04);
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .main-card .card-body {
+            padding: 20px 16px;
+        }
+
+        /* Tabel dengan desain modern */
+        .table-responsive {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        #tpqTable {
+            font-size: 0.9rem;
+            margin-bottom: 0;
+        }
+
+        #tpqTable thead th {
+            background: #f8fafc;
+            color: #1e293b;
+            font-weight: 600;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+            padding: 14px 12px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        #tpqTable tbody td {
+            padding: 12px 12px;
+            vertical-align: middle;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        #tpqTable tbody tr:hover {
+            background-color: #f8fafc;
+        }
+
+        /* Gaya untuk baris catatan (Non-Angka) */
+        .row-catatan {
+            background: #fffbeb !important;
+            border-left: 4px solid #f59e0b;
+        }
+
+        .row-catatan td {
+            color: #92400e;
+        }
+
+        .row-catatan:hover {
+            background: #fef3c7 !important;
+        }
+
+        /* Tombol aksi di tabel */
+        .btn-action {
+            padding: 4px 12px;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            border: none;
+            transition: all 0.2s ease;
+        }
+
+        .btn-action-edit {
+            background: #dbeafe;
+            color: #1e3a8a;
+        }
+
+        .btn-action-edit:hover {
+            background: #bfdbfe;
+            transform: scale(1.05);
+        }
+
+        /* Modal dengan desain modern */
+        .modal-content {
+            border-radius: 20px;
+            border: none;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+            border-radius: 20px 20px 0 0;
+            padding: 20px 24px;
+            border: none;
+        }
+
+        .modal-header .modal-title {
+            color: white;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .modal-header .btn-close {
+            filter: brightness(0) invert(1);
+            opacity: 0.8;
+        }
+
+        .modal-body {
+            padding: 24px;
+        }
+
+        .modal-footer {
+            padding: 16px 24px 24px;
+            border-top: 1px solid #f1f5f9;
+        }
+
+        .form-label {
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: #1e293b;
+            margin-bottom: 6px;
+        }
+
+        .form-control {
+            border-radius: 12px;
+            border: 1.5px solid #e2e8f0;
+            padding: 10px 14px;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+        }
+
+        .form-control:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+        }
+
+        .btn-submit {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            padding: 10px 28px;
+            border-radius: 50px;
+            font-weight: 600;
+            border: none;
+            transition: all 0.25s ease;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(16, 185, 129, 0.3);
+            color: white;
+        }
+
+        .btn-cancel {
+            padding: 10px 28px;
+            border-radius: 50px;
+            font-weight: 600;
+            border: 1.5px solid #e2e8f0;
+            background: transparent;
+            color: #64748b;
+            transition: all 0.2s ease;
+        }
+
+        .btn-cancel:hover {
+            background: #f1f5f9;
+            border-color: #cbd5e1;
+        }
+
+        /* Status kosong */
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #94a3b8;
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 16px;
+            opacity: 0.4;
+        }
+
+        /* Responsive Mobile */
+        @media (max-width: 576px) {
+            body {
+                padding: 12px;
+            }
+
+            .app-wrapper {
+                padding: 0;
+            }
+
+            .header-section {
+                padding: 24px 20px 32px;
+                border-radius: 20px;
+            }
+
+            .header-title {
+                font-size: 1.4rem;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .action-buttons .btn-custom {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .main-card .card-body {
+                padding: 12px 8px;
+            }
+
+            #tpqTable {
+                font-size: 0.8rem;
+            }
+
+            #tpqTable thead th,
+            #tpqTable tbody td {
+                padding: 10px 8px;
+            }
+
+            #tpqTable thead th {
+                font-size: 0.7rem;
+            }
+
+            .modal-body {
+                padding: 16px;
+            }
+
+            .modal-footer {
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .modal-footer .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 400px) {
+            .header-section {
+                padding: 20px 16px 28px;
+            }
+
+            .header-title {
+                font-size: 1.2rem;
+            }
+
+            .admin-badge {
+                font-size: 0.7rem;
+                padding: 4px 12px;
+            }
+
+            #tpqTable {
+                font-size: 0.75rem;
+            }
+
+            #tpqTable thead th,
+            #tpqTable tbody td {
+                padding: 8px 6px;
+            }
+        }
+
+        /* Loading shimmer */
+        .shimmer {
+            background: linear-gradient(90deg, #f0f4f8 25%, #e2e8f0 50%, #f0f4f8 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+
+        /* DataTables custom */
+        .dataTables_wrapper .dataTables_filter input {
+            border-radius: 50px;
+            padding: 8px 16px;
+            border: 1.5px solid #e2e8f0;
+            font-size: 0.85rem;
+        }
+
+        .dataTables_wrapper .dataTables_filter input:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+        }
+
+        .dataTables_wrapper .dataTables_paginate .paginate_button {
+            border-radius: 8px;
+            padding: 4px 12px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .dataTables_wrapper .dataTables_paginate .paginate_button.current {
+            background: #1e3a8a;
+            color: white !important;
+            border-color: #1e3a8a;
+        }
+
+        .dataTables_wrapper .dataTables_info {
+            font-size: 0.8rem;
+            color: #64748b;
+        }
+
+        @media (max-width: 576px) {
+            .dataTables_wrapper .dataTables_filter {
+                float: none;
+                text-align: center;
+                margin-bottom: 12px;
+            }
+
+            .dataTables_wrapper .dataTables_filter input {
+                width: 100%;
+            }
+
+            .dataTables_wrapper .dataTables_paginate {
+                float: none;
+                text-align: center;
+                margin-top: 12px;
+            }
+        }
     </style>
     <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body>
 
-<div class="container py-5">
-    <h1 class="header-title">Daftar Lembaga/TPQ <br> Qiroati Cabang Demak</h1>
-
-    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
-        <div>
-            <span id="adminBadge" class="admin-badge">Mode Admin Terverifikasi</span>
-            <button id="btnAdd" class="btn btn-primary btn-add" onclick="showAddModal()">+ Tambah Lembaga</button>
-        </div>
-        <div>
-            <div id="g_id_onload"
-                 data-client_id="80242388696-pcng9mbi748g2d99grs28p0bs87iavfa.apps.googleusercontent.com"
-                 data-callback="handleCredentialResponse"
-                 data-auto_prompt="false">
+<div class="app-wrapper">
+    <!-- Header dengan Gradien Modern -->
+    <div class="header-section">
+        <div class="header-content">
+            <div class="row align-items-center">
+                <div class="col-md-7">
+                    <h1 class="header-title">
+                        <i class="fas fa-mosque me-2" style="opacity: 0.9;"></i>
+                        Daftar Lembaga/TPQ
+                    </h1>
+                    <p class="header-subtitle">Qiroati Cabang Demak</p>
+                </div>
+                <div class="col-md-5 mt-3 mt-md-0">
+                    <div class="d-flex flex-wrap gap-2 justify-content-md-end">
+                        <div class="admin-badge-container" id="adminBadgeContainer">
+                            <span class="admin-badge" id="adminBadge">
+                                <i class="fas fa-shield-alt"></i>
+                                Mode Admin
+                            </span>
+                            <button id="btnAdd" class="btn-custom btn-custom-primary" onclick="showAddModal()">
+                                <i class="fas fa-plus-circle"></i> Tambah
+                            </button>
+                            <button id="btnLogout" class="btn-custom btn-custom-danger" onclick="logout()">
+                                <i class="fas fa-sign-out-alt"></i> Keluar
+                            </button>
+                        </div>
+                        <div id="googleBtnContainer">
+                            <div class="g_id_signin" data-type="standard" id="googleBtn"></div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="g_id_signin" data-type="standard" id="googleBtn"></div>
-            <button id="btnLogout" class="btn btn-outline-danger btn-sm" style="display:none;" onclick="logout()">Keluar Admin</button>
         </div>
     </div>
 
-    <div class="card main-card">
-        <div class="card-body p-4 table-responsive">
-            <table id="tpqTable" class="table table-striped table-hover w-100">
-                <thead class="table-dark">
-                    <tr id="tableHeader">
-                        <th>No.</th>
-                        <th>Korcam</th>
-                        <th>Nama TPQ</th>
-                        <th>Kepala Lembaga</th>
+    <!-- Kartu Tabel -->
+    <div class="main-card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table id="tpqTable" class="table w-100">
+                    <thead>
+                        <tr id="tableHeader">
+                            <th>No.</th>
+                            <th>Korcam</th>
+                            <th>Nama TPQ</th>
+                            <th>Kepala Lembaga</th>
                         </tr>
-                </thead>
-                <tbody id="tableBody">
-                    <tr><td colspan="4" class="text-center text-muted">Memuat data...</td></tr>
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody id="tableBody">
+                        <tr>
+                            <td colspan="4" class="text-center text-muted py-4">
+                                <i class="fas fa-spinner fa-spin me-2"></i> Memuat data...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>
 
+<!-- Modal Form -->
 <div class="modal fade" id="dataModal" data-bs-backdrop="static" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
-            <div class="modal-header bg-primary text-white">
-                <h5 class="modal-title" id="modalTitle">Form Data Lembaga</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalTitle">
+                    <i class="fas fa-edit me-2"></i> Form Data Lembaga
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form id="tpqForm" onsubmit="submitForm(event)">
                 <div class="modal-body">
@@ -70,29 +578,31 @@
                     <input type="hidden" id="formRowIndex">
                     
                     <div class="mb-3" id="fieldTpqidContainer">
-                        <label class="form-label fw-bold">TPQ ID</label>
+                        <label class="form-label">TPQ ID</label>
                         <input type="text" id="formTpqid" class="form-control" placeholder="Masukkan ID TPQ">
                     </div>
                     <div class="mb-3">
-                        <label class="form-label fw-bold">Korcam</label>
-                        <input type="text" id="formKorcam" class="form-control" required>
+                        <label class="form-label">Korcam <span class="text-danger">*</span></label>
+                        <input type="text" id="formKorcam" class="form-control" required placeholder="Nama Korcam">
                     </div>
                     <div class="mb-3">
-                        <label class="form-label fw-bold">Nama TPQ / Catatan</label>
-                        <input type="text" id="formNamaTpq" class="form-control" required>
+                        <label class="form-label">Nama TPQ / Catatan <span class="text-danger">*</span></label>
+                        <input type="text" id="formNamaTpq" class="form-control" required placeholder="Nama TPQ atau catatan">
                     </div>
                     <div class="mb-3">
-                        <label class="form-label fw-bold">Kepala Lembaga</label>
-                        <input type="text" id="formKepalaLembaga" class="form-control">
+                        <label class="form-label">Kepala Lembaga</label>
+                        <input type="text" id="formKepalaLembaga" class="form-control" placeholder="Nama Kepala Lembaga">
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">HP / WA</label>
+                    <div class="mb-0">
+                        <label class="form-label">HP / WA</label>
                         <input type="text" id="formHpWa" class="form-control" placeholder="Contoh: 08123456789">
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                    <button type="submit" id="btnSubmitForm" class="btn btn-success">Simpan Data</button>
+                    <button type="button" class="btn-cancel" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" id="btnSubmitForm" class="btn-submit">
+                        <i class="fas fa-save me-2"></i> Simpan Data
+                    </button>
                 </div>
             </form>
         </div>
@@ -105,7 +615,6 @@
 <script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
 
 <script>
-    // 1. PASTE URL WEB APP APPS SCRIPT MANDARI ANDA DI SINI
     const API_URL = "https://script.google.com/macros/s/AKfycbxmoo9dT0EHyi4jrVut-AKbz8-92Lp1tuETEsqrSyrvHE7m6V8zjg8x2ychZwb2AdUUwg/exec";
     
     let cachedIdToken = null;
@@ -125,7 +634,7 @@
         if (dataTableInstance) {
             dataTableInstance.destroy();
         }
-        $('#tableBody').html('<tr><td colspan="6" class="text-center text-muted">Memuat data terbaru dari Google Sheets...</td></tr>');
+        $('#tableBody').html(`<tr><td colspan="6" class="text-center text-muted py-4"><i class="fas fa-spinner fa-spin me-2"></i> Memuat data terbaru...</td></tr>`);
 
         $.getJSON(url, function(response) {
             if (response.status === "success") {
@@ -135,38 +644,36 @@
                 alert("Gagal memuat data: " + response.message);
             }
         }).fail(function() {
-            alert("Koneksi gagal. Pastikan URL API Apps Script sudah benar dan di-deploy sebagai 'Anyone'.");
+            alert("Koneksi gagal. Pastikan URL API Apps Script sudah benar.");
         });
     }
 
     function renderTable(isAdmin, data) {
-        // Atur susunan header tabel secara dinamis
         let headerHtml = '<th>No.</th><th>Korcam</th><th>Nama TPQ</th><th>Kepala Lembaga</th>';
         if (isAdmin) {
             headerHtml += '<th>HP/WA</th><th style="width: 70px;">Aksi</th>';
-            $('#adminBadge').show();
-            $('#btnAdd').show();
-            $('#googleBtn').hide();
-            $('#btnLogout').show();
+            $('#adminBadgeContainer').css('display', 'flex');
+            $('#googleBtnContainer').hide();
         } else {
-            $('#adminBadge').hide();
-            $('#btnAdd').hide();
-            $('#googleBtn').show();
-            $('#btnLogout').hide();
+            $('#adminBadgeContainer').hide();
+            $('#googleBtnContainer').show();
         }
         $('#tableHeader').html(headerHtml);
 
         let bodyHtml = '';
         if (data.length === 0) {
-            bodyHtml = `<tr><td colspan="${isAdmin ? 6 : 4}" class="text-center text-muted">Tidak ada data untuk ditampilkan</td></tr>`;
+            bodyHtml = `<tr><td colspan="${isAdmin ? 6 : 4}" class="text-center py-4">
+                <div class="empty-state">
+                    <i class="fas fa-database"></i>
+                    <p class="mb-0">Tidak ada data untuk ditampilkan</p>
+                </div>
+            </td></tr>`;
             $('#tableBody').html(bodyHtml);
             return;
         }
 
         data.forEach(function(item, index) {
-            // Cek apakah kolom NO merupakan angka murni
             const isNumericNo = !isNaN(parseFloat(item.no)) && isFinite(item.no);
-            // Jika bukan angka (A, B, C, X), beri kelas 'row-catatan' agar warnanya berbeda di mata admin
             const rowClass = isNumericNo ? "" : "row-catatan";
 
             bodyHtml += `<tr class="${rowClass}">
@@ -178,7 +685,9 @@
             if (isAdmin) {
                 bodyHtml += `<td>${item.hp_wa || '-'}</td>
                 <td>
-                    <button class="btn btn-warning btn-sm py-0 px-2" onclick="showEditModal(${index})">Edit</button>
+                    <button class="btn-action btn-action-edit" onclick="showEditModal(${index})">
+                        <i class="fas fa-pen"></i> Edit
+                    </button>
                 </td>`;
             }
             bodyHtml += `</tr>`;
@@ -186,14 +695,16 @@
 
         $('#tableBody').html(bodyHtml);
         
-        // Inisialisasi DataTables dengan konfigurasi Bahasa Indonesia
         dataTableInstance = $('#tpqTable').DataTable({
             "language": {
                 "url": "https://cdn.datatables.net/plug-ins/1.13.4/i18n/id.json"
             },
             "pageLength": 25,
             "responsive": true,
-            "order": [] // Mempertahankan urutan asli bawaan Google Sheets
+            "order": [],
+            "columnDefs": [
+                { "orderable": false, "targets": [5] }
+            ]
         });
     }
 
@@ -211,7 +722,7 @@
     function showAddModal() {
         $('#tpqForm')[0].reset();
         $('#formAction').val('add');
-        $('#modalTitle').text('Tambah Data Lembaga / TPQ Baru');
+        $('#modalTitle').html('<i class="fas fa-plus-circle me-2"></i> Tambah Data Lembaga / TPQ');
         $('#dataModal').modal('show');
     }
 
@@ -225,7 +736,7 @@
         $('#formKepalaLembaga').val(item.kepala_lembaga || '');
         $('#formHpWa').val(item.hp_wa || '');
         
-        $('#modalTitle').text(`Edit Data (Baris No. ${item.no})`);
+        $('#modalTitle').html(`<i class="fas fa-edit me-2"></i> Edit Data (Baris No. ${item.no})`);
         $('#dataModal').modal('show');
     }
 
@@ -236,7 +747,7 @@
             return;
         }
 
-        $('#btnSubmitForm').prop('disabled', true).text('Menyimpan...');
+        $('#btnSubmitForm').prop('disabled', true).html('<i class="fas fa-spinner fa-spin me-2"></i> Menyimpan...');
 
         const payload = {
             id_token: cachedIdToken,
@@ -253,10 +764,10 @@
             url: API_URL,
             type: 'POST',
             dataType: 'json',
-            contentType: 'text/plain', // Teknik krusial bypass CORS preflight pada GAS Web App
+            contentType: 'text/plain',
             data: JSON.stringify(payload),
             success: function(response) {
-                $('#btnSubmitForm').prop('disabled', false).text('Simpan Data');
+                $('#btnSubmitForm').prop('disabled', false).html('<i class="fas fa-save me-2"></i> Simpan Data');
                 if (response.status === "success") {
                     alert(response.message);
                     $('#dataModal').modal('hide');
@@ -266,7 +777,7 @@
                 }
             },
             error: function() {
-                $('#btnSubmitForm').prop('disabled', false).text('Simpan Data');
+                $('#btnSubmitForm').prop('disabled', false).html('<i class="fas fa-save me-2"></i> Simpan Data');
                 alert("Terjadi kesalahan sistem/jaringan saat mengirim data ke server.");
             }
         });
