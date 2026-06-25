@@ -541,6 +541,7 @@
                             <th>Korcam</th>
                             <th>Nama TPQ</th>
                             <th>Kepala Lembaga</th>
+                            <!-- Kolom HP/WA dan Aksi akan ditambahkan oleh JavaScript jika admin -->
                         </tr>
                     </thead>
                     <tbody id="tableBody">
@@ -625,10 +626,14 @@
             url += "?id_token=" + cachedIdToken;
         }
 
+        // Hancurkan instance DataTables jika ada
         if (dataTableInstance) {
             dataTableInstance.destroy();
+            dataTableInstance = null;
         }
-        $('#tableBody').html(`<tr><td colspan="6" class="text-center text-muted py-4"><i class="fas fa-spinner fa-spin me-2"></i> Memuat data terbaru dari Google Sheets...</td></tr>`);
+
+        // Reset tabel dengan loading state
+        $('#tableBody').html('<tr><td colspan="4" class="text-center text-muted py-4"><i class="fas fa-spinner fa-spin me-2"></i> Memuat data terbaru dari Google Sheets...</td></tr>');
 
         $.getJSON(url, function(response) {
             if (response.status === "success") {
@@ -643,6 +648,10 @@
     }
 
     function renderTable(isAdmin, data) {
+        // Tentukan jumlah kolom berdasarkan status admin
+        const columnCount = isAdmin ? 6 : 4;
+        
+        // Buat header dinamis
         let headerHtml = '<th>No.</th><th>Korcam</th><th>Nama TPQ</th><th>Kepala Lembaga</th>';
         if (isAdmin) {
             headerHtml += '<th>HP/WA</th><th style="width: 70px;">Aksi</th>';
@@ -654,41 +663,41 @@
         }
         $('#tableHeader').html(headerHtml);
 
+        // Buat body tabel
         let bodyHtml = '';
         if (data.length === 0) {
-            bodyHtml = `<tr><td colspan="${isAdmin ? 6 : 4}" class="text-center py-4">
+            bodyHtml = `<tr><td colspan="${columnCount}" class="text-center py-4">
                 <div class="empty-state">
                     <i class="fas fa-database"></i>
                     <p class="mb-0">Tidak ada data untuk ditampilkan</p>
                 </div>
             </td></tr>`;
-            $('#tableBody').html(bodyHtml);
-            return;
+        } else {
+            data.forEach(function(item, index) {
+                const isNumericNo = !isNaN(parseFloat(item.no)) && isFinite(item.no);
+                const rowClass = isNumericNo ? "" : "row-catatan";
+
+                bodyHtml += `<tr class="${rowClass}">
+                    <td><strong>${item.no ?? ''}</strong></td>
+                    <td>${item.korcam ?? ''}</td>
+                    <td>${item.nama_tpq ?? ''}</td>
+                    <td>${item.kepala_lembaga ?? ''}</td>`;
+                
+                if (isAdmin) {
+                    bodyHtml += `<td>${item.hp_wa || '-'}</td>
+                    <td>
+                        <button class="btn-action btn-action-edit" onclick="showEditModal(${index})">
+                            <i class="fas fa-pen"></i> Edit
+                        </button>
+                    </td>`;
+                }
+                bodyHtml += `</tr>`;
+            });
         }
-
-        data.forEach(function(item, index) {
-            const isNumericNo = !isNaN(parseFloat(item.no)) && isFinite(item.no);
-            const rowClass = isNumericNo ? "" : "row-catatan";
-
-            bodyHtml += `<tr class="${rowClass}">
-                <td><strong>${item.no ?? ''}</strong></td>
-                <td>${item.korcam ?? ''}</td>
-                <td>${item.nama_tpq ?? ''}</td>
-                <td>${item.kepala_lembaga ?? ''}</td>`;
-            
-            if (isAdmin) {
-                bodyHtml += `<td>${item.hp_wa || '-'}</td>
-                <td>
-                    <button class="btn-action btn-action-edit" onclick="showEditModal(${index})">
-                        <i class="fas fa-pen"></i> Edit
-                    </button>
-                </td>`;
-            }
-            bodyHtml += `</tr>`;
-        });
 
         $('#tableBody').html(bodyHtml);
         
+        // Inisialisasi DataTables
         dataTableInstance = $('#tpqTable').DataTable({
             "language": {
                 "url": "https://cdn.datatables.net/plug-ins/1.13.4/i18n/id.json"
@@ -697,8 +706,14 @@
             "responsive": true,
             "order": [],
             "columnDefs": [
-                { "orderable": false, "targets": [5] }
-            ]
+                { "orderable": false, "targets": isAdmin ? [5] : [] }
+            ],
+            "drawCallback": function() {
+                // Memastikan baris catatan tetap memiliki style yang benar setelah redraw
+                $('.row-catatan').each(function() {
+                    $(this).css('background', '#fffbeb !important');
+                });
+            }
         });
     }
 
