@@ -25,14 +25,12 @@
             color: #1a1a2e;
         }
 
-        /* Container utama dengan efek glassmorphism halus */
         .app-wrapper {
             max-width: 1200px;
             margin: 0 auto;
             padding: 20px 16px;
         }
 
-        /* Header dengan gradien modern */
         .header-section {
             background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
             border-radius: 24px;
@@ -88,7 +86,6 @@
             margin-bottom: 0;
         }
 
-        /* Badge status admin */
         .admin-badge-container {
             display: none;
             align-items: center;
@@ -115,7 +112,6 @@
             font-size: 0.9rem;
         }
 
-        /* Tombol aksi */
         .action-buttons {
             display: flex;
             gap: 10px;
@@ -134,6 +130,7 @@
             align-items: center;
             gap: 8px;
             text-decoration: none;
+            cursor: pointer;
         }
 
         .btn-custom-primary {
@@ -174,7 +171,6 @@
             color: white;
         }
 
-        /* Kartu utama */
         .main-card {
             background: white;
             border-radius: 20px;
@@ -188,7 +184,6 @@
             padding: 20px 16px;
         }
 
-        /* Tabel dengan desain modern */
         .table-responsive {
             overflow-x: auto;
             -webkit-overflow-scrolling: touch;
@@ -220,7 +215,6 @@
             background-color: #f8fafc;
         }
 
-        /* Gaya untuk baris catatan (Non-Angka) */
         .row-catatan {
             background: #fffbeb !important;
             border-left: 4px solid #f59e0b;
@@ -234,7 +228,6 @@
             background: #fef3c7 !important;
         }
 
-        /* Tombol aksi di tabel */
         .btn-action {
             padding: 4px 12px;
             border-radius: 50px;
@@ -242,6 +235,7 @@
             font-weight: 600;
             border: none;
             transition: all 0.2s ease;
+            cursor: pointer;
         }
 
         .btn-action-edit {
@@ -254,7 +248,6 @@
             transform: scale(1.05);
         }
 
-        /* Modal dengan desain modern */
         .modal-content {
             border-radius: 20px;
             border: none;
@@ -316,6 +309,7 @@
             font-weight: 600;
             border: none;
             transition: all 0.25s ease;
+            cursor: pointer;
         }
 
         .btn-submit:hover {
@@ -332,6 +326,7 @@
             background: transparent;
             color: #64748b;
             transition: all 0.2s ease;
+            cursor: pointer;
         }
 
         .btn-cancel:hover {
@@ -339,7 +334,6 @@
             border-color: #cbd5e1;
         }
 
-        /* Status kosong */
         .empty-state {
             text-align: center;
             padding: 40px 20px;
@@ -352,7 +346,6 @@
             opacity: 0.4;
         }
 
-        /* Responsive Mobile */
         @media (max-width: 576px) {
             body {
                 padding: 12px;
@@ -437,7 +430,6 @@
             }
         }
 
-        /* Loading shimmer */
         .shimmer {
             background: linear-gradient(90deg, #f0f4f8 25%, #e2e8f0 50%, #f0f4f8 75%);
             background-size: 200% 100%;
@@ -449,7 +441,6 @@
             100% { background-position: 200% 0; }
         }
 
-        /* DataTables custom */
         .dataTables_wrapper .dataTables_filter input {
             border-radius: 50px;
             padding: 8px 16px;
@@ -502,7 +493,6 @@
 <body>
 
 <div class="app-wrapper">
-    <!-- Header dengan Gradien Modern -->
     <div class="header-section">
         <div class="header-content">
             <div class="row align-items-center">
@@ -518,16 +508,21 @@
                         <div class="admin-badge-container" id="adminBadgeContainer">
                             <span class="admin-badge" id="adminBadge">
                                 <i class="fas fa-shield-alt"></i>
-                                Mode Admin
+                                Mode Admin Terverifikasi
                             </span>
                             <button id="btnAdd" class="btn-custom btn-custom-primary" onclick="showAddModal()">
-                                <i class="fas fa-plus-circle"></i> Tambah
+                                <i class="fas fa-plus-circle"></i> Tambah Lembaga
                             </button>
                             <button id="btnLogout" class="btn-custom btn-custom-danger" onclick="logout()">
-                                <i class="fas fa-sign-out-alt"></i> Keluar
+                                <i class="fas fa-sign-out-alt"></i> Keluar Admin
                             </button>
                         </div>
                         <div id="googleBtnContainer">
+                            <div id="g_id_onload"
+                                 data-client_id="80242388696-pcng9mbi748g2d99grs28p0bs87iavfa.apps.googleusercontent.com"
+                                 data-callback="handleCredentialResponse"
+                                 data-auto_prompt="false">
+                            </div>
                             <div class="g_id_signin" data-type="standard" id="googleBtn"></div>
                         </div>
                     </div>
@@ -536,7 +531,6 @@
         </div>
     </div>
 
-    <!-- Kartu Tabel -->
     <div class="main-card">
         <div class="card-body">
             <div class="table-responsive">
@@ -562,7 +556,6 @@
     </div>
 </div>
 
-<!-- Modal Form -->
 <div class="modal fade" id="dataModal" data-bs-backdrop="static" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -615,6 +608,7 @@
 <script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
 
 <script>
+    // PASTE URL WEB APP APPS SCRIPT MANDARI ANDA DI SINI
     const API_URL = "https://script.google.com/macros/s/AKfycbxmoo9dT0EHyi4jrVut-AKbz8-92Lp1tuETEsqrSyrvHE7m6V8zjg8x2ychZwb2AdUUwg/exec";
     
     let cachedIdToken = null;
@@ -634,7 +628,7 @@
         if (dataTableInstance) {
             dataTableInstance.destroy();
         }
-        $('#tableBody').html(`<tr><td colspan="6" class="text-center text-muted py-4"><i class="fas fa-spinner fa-spin me-2"></i> Memuat data terbaru...</td></tr>`);
+        $('#tableBody').html(`<tr><td colspan="6" class="text-center text-muted py-4"><i class="fas fa-spinner fa-spin me-2"></i> Memuat data terbaru dari Google Sheets...</td></tr>`);
 
         $.getJSON(url, function(response) {
             if (response.status === "success") {
@@ -644,7 +638,7 @@
                 alert("Gagal memuat data: " + response.message);
             }
         }).fail(function() {
-            alert("Koneksi gagal. Pastikan URL API Apps Script sudah benar.");
+            alert("Koneksi gagal. Pastikan URL API Apps Script sudah benar dan di-deploy sebagai 'Anyone'.");
         });
     }
 
@@ -722,7 +716,7 @@
     function showAddModal() {
         $('#tpqForm')[0].reset();
         $('#formAction').val('add');
-        $('#modalTitle').html('<i class="fas fa-plus-circle me-2"></i> Tambah Data Lembaga / TPQ');
+        $('#modalTitle').html('<i class="fas fa-plus-circle me-2"></i> Tambah Data Lembaga / TPQ Baru');
         $('#dataModal').modal('show');
     }
 
